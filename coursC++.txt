@@ -6,3 +6,28 @@ Il est utilisé, par exemple, lorsque l’on crée des tableaux d’objet. En ef
 En outre, de nombreuses bibliothèques commerciales ou non (Third Party Software), dont la bibliothèque standard du C++, nécessitent un constructeur par défaut pour la fabrication d’objets temporaires.
 Si vous ne spécifiez aucun constructeur pour votre classe, alors le compilateur essaye de fournir un constructeur par défaut, qui, selon les environnements de développement, initialise à zéro chacun des membres de la classe ou les laisse vide. Au cas où votre classe agrégerait par valeur des objets, ceux-ci sont initialisés par leur constructeur par défaut s’il existe – autrement, le constructeur par défaut automatique ne peut pas être construit faute de moyen de construction des objets agrégés.
 A partir du moment où vous spécifiez au moins un constructeur pour votre classe, le compilateur n’essaie plus de générer de constructeur par défaut automatique considérant que ceci est de votre ressort. De manière générale, il est très dangereux de ne pas fournir de constructeur pour une classe, sauf, peut-être, dans le cas de classes exception sans attribut.
+
+
+1.2 Constructeur de recopie
+
+1.2.1 But du constructeur de recopies
+
+Comme son nom l’indique, le constructeur de recopie est spécialisé dans la création d’un objet à partir d’un autre objet pris comme modèle. J’insiste sur le fait qu’il s’agit d’une création, donc à l’intérieur d’une déclaration d’objet. Toute autre duplication (au cours de la vie d’un objet) sera faite par l’opérateur d’affectation.
+Le constructeur de recopie a également deux autres utilisations spécifiées dans le langage :
+ Lorsqu’un objet est passé en paramètre par valeur à une fonction ou une méthode, il y a appel du constructeur par recopie pour générer l’objet utilisé en interne dans celle-ci. Ceci garantit que l’objet original ne peut être modifié ! L’autre solution consiste à utiliser une référence constante.
+ Au retour d’une fonction / méthode renvoyant un objet, il y a création d’un objet temporaire par le constructeur de recopie, lequel est placé sur la pile pour usage par le code appelant.
+Ces deux fonctionnalités seront étudiées en détail dans les paragraphes concernant le type de retour des surcharges d’opérateurs.
+1.2.2 Prototype du constructeur de recopie
+
+La forme habituelle d’un constructeur de recopie est la suivante :
+T::T(const T&)
+Le paramètre est passé en référence, ce qui assure de bonnes performances et empêche un bouclage infini. En effet, si l’argument était passé par valeur, il devrait être construit par le constructeur de recopie. Hors c’est précisément ce dernier que nous bâtissons : il y aurait un appel récursif infini !
+D’autre part, la référence est constante, ce qui garantit que seules des méthodes constantes ne pouvant pas modifier les attributs seront appelables sur l’objet passé en argument. Notons toutefois que cette précaution est une chimère. En effet, le constructeur par recopie étant nécessairement une méthode d’instance appartenant à la classe T, il a visibilité sur les attributs de la classe et peut donc ainsi délibérément modifier les attributs de l’objet passé en argument sans passer par ses méthodes. Il appartient donc au programmeur de ne pas modifier l’objet argument.
+
+1.2.3 Quand est il nécessaire de créer un constructeur de recopie ?
+
+Si nous ne spécifiez pas de constructeur par recopie, le compilateur en crée un automatiquement. Celui-ci est très simple : il recopie bit à bit, de manière « optimisée » l’objet source dans l’objet destination.
+Ce comportement est absolument parfait pour les classes simples ne réalisant ni agrégation ni allocations dynamiques. Dans ce cas là, vous n’avez pas besoin de fournir un constructeur de recopie car vous ferez probablement moins bien que le compilateur lui même.
+Dans tous les autres cas, vous aurez besoin de définir un constructeur de recopie :
+Agrégation par valeur : il vous faudra recopier les objets agrégés par valeur, en appelant … leur constructeur par recopie !
+Agrégation par référence (ou pointeur) et allocation dynamique de mémoire : la copie optimisée ne générant que des copies de pointeurs, différents objets utiliseraient les même cases mémoire. D’une part, les modifications de l’un seraient répercutées sur l’autre, mais, plus grave, en l’absence de mécanismes de garde fou, les mêmes blocs de mémoire seraient libérés plusieurs fois par les destructeurs : il est nécessaire de faire une recopie des objets agrégés par référence (avec le constructeur de recopie …) ou des blocs de mémoire (new …)
