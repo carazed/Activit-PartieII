@@ -1,2 +1,2 @@
-# Activit-PartieII
-Activité demandée dans le cours dur git / gitHub d'OpenClassrooms
+# Activite-PartieII
+Activité demandée dans le cours sur git / gitHub d'OpenClassrooms
