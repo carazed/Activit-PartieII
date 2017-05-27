@@ -1,0 +1,8 @@
+1.1 Constructeur par défaut
+
+
+Le constructeur par défaut est un constructeur sans argument ou dont chacun des arguments possède une valeur par défaut.
+Il est utilisé, par exemple, lorsque l’on crée des tableaux d’objet. En effet, il n’est pas possible de passer un constructeur à l’opérateur new[] responsable de la création des tableaux.
+En outre, de nombreuses bibliothèques commerciales ou non (Third Party Software), dont la bibliothèque standard du C++, nécessitent un constructeur par défaut pour la fabrication d’objets temporaires.
+Si vous ne spécifiez aucun constructeur pour votre classe, alors le compilateur essaye de fournir un constructeur par défaut, qui, selon les environnements de développement, initialise à zéro chacun des membres de la classe ou les laisse vide. Au cas où votre classe agrégerait par valeur des objets, ceux-ci sont initialisés par leur constructeur par défaut s’il existe – autrement, le constructeur par défaut automatique ne peut pas être construit faute de moyen de construction des objets agrégés.
+A partir du moment où vous spécifiez au moins un constructeur pour votre classe, le compilateur n’essaie plus de générer de constructeur par défaut automatique considérant que ceci est de votre ressort. De manière générale, il est très dangereux de ne pas fournir de constructeur pour une classe, sauf, peut-être, dans le cas de classes exception sans attribut.
